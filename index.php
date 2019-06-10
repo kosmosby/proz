@@ -22,7 +22,15 @@ class proz
         $this->authentication();
 
         //grab methods
-        $this->grabAccount_type();
+        //$this->grabAccount_type();
+        //$this->grabGeneral_service();
+        //$this->grabGeneral_discipline();
+        //$this->grabGeneral_language();
+        //$this->grabSpecific_disciplines();
+        //$this-> grabCurrency();
+        //$this->grabDocument_types();
+        //$this->grabLanguage_services();
+        //$this->grabsoftware();
 
 
         $this->getLanguages();
@@ -425,7 +433,6 @@ Favio Estevez.
             die("Connection failed: " . $conn->connect_error);
         }
 
-
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/account-type");
         curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
@@ -463,9 +470,493 @@ Favio Estevez.
 
         echo "<pre>";
         print_r($rows); die;
-
     }
 
+    public function grabGeneral_service() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/general-service");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+        $services= $rows->general_services;
+
+        for($i=0;$i<count($services);$i++) {
+
+            $sql = "INSERT INTO general_service (gen_service_id, gen_service_name) VALUES (" . $services[$i]->gen_service_id . ", '" . $services[$i]->gen_service_name ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabGeneral_discipline() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/disc-gen");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+        foreach ($rows as $k=>$v) {
+            $disc= $v;
+        }
+
+        for($i=0;$i<count($disc);$i++) {
+
+            $sql = "INSERT INTO general_disciplines (disc_gen_id, disc_gen_name) VALUES (" . $disc[$i]->disc_gen_id . ", '" . $disc[$i]->disc_gen_name ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabGeneral_language() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/language");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+        $lang= $rows->languages;
+
+
+        for($i=0;$i<count($lang);$i++) {
+
+            $sql = "INSERT INTO languages (language_code, language_name) VALUES ('" . $lang[$i]->language_code . "', '" . mysql_real_escape_string($lang[$i]->language_name) ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabSpecific_disciplines() {
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "proz";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $curlHandle = curl_init();
+    curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/disc-spec");
+    curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+    curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+    $response = curl_exec($curlHandle);
+
+    if($response == FALSE) {
+        $errorText = curl_error($curlHandle);
+        curl_close($curlHandle);
+        die($errorText);
+    }
+
+    $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+    curl_close($curlHandle);
+
+    if($httpCode != 200) {
+        die("unexpected response ".$response);
+    }
+
+    $rows=json_decode($response);
+
+    foreach ($rows as $k=>$disc) {
+
+    }
+    //$disc= $rows->specific-disciplines;
+
+    for($i=0;$i<count($disc);$i++) {
+
+        $sql = "INSERT INTO specific_disciplines (disc_spec_id, disc_spec_name) VALUES ('" . $disc[$i]->disc_spec_id . "', '" . mysql_real_escape_string($disc[$i]->disc_spec_name) ."')";
+
+        if ($conn->query($sql) === TRUE) {
+
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    echo "<pre>";
+    print_r($rows); die;
+}
+
+
+    public function grabCountries() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/country");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+
+        foreach ($rows as $k=>$disc) {
+
+        }
+        //$disc= $rows->specific-disciplines;
+
+        for($i=0;$i<count($disc);$i++) {
+
+            $sql = "INSERT INTO countries (country_code, country_name) VALUES ('" . $disc[$i]->country_code . "', '" . mysql_real_escape_string($disc[$i]->country_name) ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabCurrency() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/currency");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+
+        foreach ($rows as $k=>$disc) {
+
+        }
+        //$disc= $rows->specific-disciplines;
+
+        for($i=0;$i<count($disc);$i++) {
+
+            $sql = "INSERT INTO currencies (currency_code, currency_name) VALUES ('" . $disc[$i]->currency_code . "', '" . mysql_real_escape_string($disc[$i]->currency_name) ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabDocument_types() {
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "proz";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $curlHandle = curl_init();
+    curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/document-type");
+    curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+    curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+    $response = curl_exec($curlHandle);
+
+    if($response == FALSE) {
+        $errorText = curl_error($curlHandle);
+        curl_close($curlHandle);
+        die($errorText);
+    }
+
+    $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+    curl_close($curlHandle);
+
+    if($httpCode != 200) {
+        die("unexpected response ".$response);
+    }
+
+    $rows=json_decode($response);
+
+
+    foreach ($rows as $k=>$disc) {
+
+    }
+    //$disc= $rows->specific-disciplines;
+
+    for($i=0;$i<count($disc);$i++) {
+
+        $sql = "INSERT INTO document_types (type_code, type_name) VALUES ('" . $disc[$i]->type_code . "', '" . mysql_real_escape_string($disc[$i]->type_name) ."')";
+
+        if ($conn->query($sql) === TRUE) {
+
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    echo "<pre>";
+    print_r($rows); die;
+}
+
+    public function grabLanguage_services() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/language-service");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+
+        foreach ($rows as $k=>$disc) {
+
+        }
+        //$disc= $rows->specific-disciplines;
+
+        for($i=0;$i<count($disc);$i++) {
+
+            $sql = "INSERT INTO language_services (lang_service_id, lang_service_name) VALUES ('" . $disc[$i]->lang_service_id . "', '" . mysql_real_escape_string($disc[$i]->lang_service_name) ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
+
+    public function grabsoftware() {
+
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "proz";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, "https://api.proz.com/v2/codes/software");
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->access_token));
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
+        $response = curl_exec($curlHandle);
+
+        if($response == FALSE) {
+            $errorText = curl_error($curlHandle);
+            curl_close($curlHandle);
+            die($errorText);
+        }
+
+        $httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        curl_close($curlHandle);
+
+        if($httpCode != 200) {
+            die("unexpected response ".$response);
+        }
+
+        $rows=json_decode($response);
+
+
+        foreach ($rows as $k=>$disc) {
+
+        }
+        //$disc= $rows->specific-disciplines;
+
+        for($i=0;$i<count($disc);$i++) {
+
+            $sql = "INSERT INTO software (software_id, software_name) VALUES ('" . $disc[$i]->software_id . "', '" . mysql_real_escape_string($disc[$i]->software_name) ."')";
+
+            if ($conn->query($sql) === TRUE) {
+
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+
+        echo "<pre>";
+        print_r($rows); die;
+    }
 
 }
 
